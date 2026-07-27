@@ -2,7 +2,7 @@
 
 Bot de Google Apps Script que envía una alerta automática por **WhatsApp** (vía [Green-API](https://green-api.com/en/)) y por **correo electrónico** cada vez que se registra un nuevo caso en el formulario Google "REPORTE FARMACOVIGILANCIA FOREAM", del Programa de Farmacovigilancia del Hospital Departamental de Villavicencio E.S.E.
 
-Es el proyecto análogo a "Bot Tecnovigilancia", reutilizando la misma instancia de Green-API pero con **Script Properties completamente independientes**.
+Es el proyecto análogo a [alertas-whatsapp-tecnovigilancia](https://github.com/jsaavedran1-glitch) ("Bot Tecnovigilancia"), reutilizando la misma instancia de Green-API pero con **Script Properties completamente independientes**.
 
 ## Arquitectura
 
@@ -10,6 +10,28 @@ Es el proyecto análogo a "Bot Tecnovigilancia", reutilizando la misma instancia
 - **Disparador (trigger):** instalable, tipo `On form submit` ("Al enviar el formulario"), apuntando a `notificarNuevaRespuesta(e)`.
 - **Canal WhatsApp:** [Green-API](https://green-api.com/en/), instancia compartida `710722693364` con el bot de Tecnovigilancia (cada proyecto tiene su propio Script Properties, así que no hay colisión de configuración pese a compartir instancia).
 - **Canal correo:** `MailApp.sendEmail` a los destinatarios institucionales fijos en el código.
+
+## Diagrama de flujo
+
+```mermaid
+flowchart TD
+    A["Usuario diligencia el formulario\nGoogle 'REPORTE FARMACOVIGILANCIA FOREAM'"] --> B["Se agrega una fila\na la hoja de cálculo de respuestas"]
+    B --> C{"Trigger instalable\nOn form submit"}
+    C --> D["notificarNuevaRespuesta(e)"]
+    D --> E["construirMensajeDesdeEvento(e)\nExtrae los 7 campos del caso\ny arma el mensaje con emojis"]
+    E --> F["enviarAlertaWhatsApp(mensaje)"]
+    E --> G["MailApp.sendEmail(...)"]
+    F --> H["PropertiesService\nlee credenciales Green-API\n(idInstance, token, chatId)"]
+    H --> I["UrlFetchApp.fetch\nPOST /sendMessage"]
+    I --> J["Grupo de WhatsApp\nNuevo SF-HDV-SyD-InterSalud"]
+    G --> K["Correo institucional\ndirecciontecnica@hdv.gov.co\ny demás destinatarios"]
+
+    style A fill:#1b2a4a,color:#fff
+    style J fill:#1b2a4a,color:#fff
+    style K fill:#1b2a4a,color:#fff
+```
+
+Resumen del recorrido: alguien envía el formulario → se crea una fila nueva en la hoja de respuestas → el trigger instalable dispara `notificarNuevaRespuesta(e)` → esta función arma el mensaje (`construirMensajeDesdeEvento`) y lo envía en paralelo por WhatsApp (Green-API) y por correo (`MailApp`).
 
 ## Archivos
 
@@ -62,15 +84,15 @@ En el editor de Apps Script → ícono de reloj (Activadores) → Agregar activa
 | `listarChatsGreenAPI()` | Lista los chats/grupos visibles para la instancia (para obtener chatIds) | No, solo lectura |
 | `testConstruccionMensaje()` | Construye el mensaje con datos ficticios y lo muestra en el log | No |
 | `eventoDePrueba()` | Datos ficticios de ejemplo | No |
-| `enviarEjemploAlGrupo()` | Envía el mensaje de ejemplo ficticio al grupo configurado | Sí |
+| `enviarEjemploAlGrupo()` | Envía el mensaje de ejemplo ficticio al grupo configurado | **Sí** |
 | `eventoCaso1()`, `eventoCaso5()`, `eventoCaso7()` | Datos reales de casos históricos (usados para pruebas) | No |
-| `enviarCasosReales()` | Envía los 3 casos reales anteriores al grupo configurado | Sí |
+| `enviarCasosReales()` | Envía los 3 casos reales anteriores al grupo configurado | **Sí** |
 
-Antes de ejecutar cualquier función marcada como "Sí" en la columna de envío, confirmar en `GREENAPI_GROUP_CHATID` que el chatId apunta al grupo de pruebas ("PRUEBA BOT") y no al grupo de producción.
+⚠️ **Antes de ejecutar cualquier función marcada como "Sí" en la columna de envío**, confirmar en `GREENAPI_GROUP_CHATID` que el chatId apunta al grupo de pruebas ("PRUEBA BOT") y no al grupo de producción.
 
 ## Pruebas locales sin credenciales
 
-```
+```bash
 node test/dry-run.js
 ```
 
@@ -79,4 +101,3 @@ Este script reconstruye la lógica de `construirMensajeDesdeEvento` en Node.js p
 ## Marco regulatorio de referencia
 
 Resolución 4816 de 2008 (Farmacovigilancia/Tecnovigilancia), algoritmo OMS-UMC de causalidad, Resolución 3100 de 2019 — aplicable al programa institucional de Farmacovigilancia del HDV E.S.E.
-
