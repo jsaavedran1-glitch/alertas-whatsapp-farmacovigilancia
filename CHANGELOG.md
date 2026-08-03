@@ -2,6 +2,14 @@
 
 Todas las fechas en hora de Colombia (America/Bogota).
 
+## [Auditoría - sin cambios de código] - 2026-08-02
+
+Tras detectar y corregir en el Bot Tecnovigilancia un bug de espacios en blanco en los títulos del Google Form (que hacía que campo() no encontrara los valores y devolviera "—"), se auditó este bot para descartar el mismo problema.
+
+Verificado: los 7 nombres de campo usados en campo() dentro de construirMensajeDesdeEvento(e) (Nombre del reportante, Profesión del reportante, Edad del paciente, Diagnóstico del paciente, Medicamentos sospechosos, Servicio donde ocurrió el evento, Descripción análisis del evento) coinciden de forma exacta, sin espacios sobrantes, con los títulos reales de las preguntas del Google Form. El Form tiene como destino la hoja de cálculo correcta. El trigger onFormSubmit hacia notificarNuevaRespuesta está correctamente configurado como único trigger activo. Prueba de solo lectura contra el último caso real del formulario, usando construirMensajeDesdeEvento de producción sin invocar envío: todos los campos salieron poblados correctamente.
+
+Conclusión: no se detectó el mismo bug que en Tecnovigilancia. No se requirió ningún cambio de código. No se enviaron mensajes de prueba al grupo de WhatsApp ni correos durante esta auditoría.
+
 ## [1.2.0] - 2026-07-26
 
 ### Cambiado
