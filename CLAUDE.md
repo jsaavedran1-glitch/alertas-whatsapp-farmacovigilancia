@@ -61,3 +61,7 @@ Resolución 4816 de 2008 (tecnovigilancia/farmacovigilancia), algoritmo OMS-UMC 
 ## Contexto institucional del usuario
 
 Juan Pablo Saavedra — Químico Farmacéutico, Referente de Farmacovigilancia/Tecnovigilancia del Hospital Departamental de Villavicencio E.S.E. No mezclar este contexto (HDV Villavicencio) con el del Hospital San Juan de Dios de Puerto Carreño, Vichada (otro proyecto institucional distinto, sin relación con este bot).
+
+## Pie de firma
+
+Todo mensaje de WhatsApp termina con `_Bot diseñado por el QF Juan Pablo Saavedra · Servicio Farmacéutico HDV_` (cursiva, mismo estilo que el bot de Alertas INVIMA), agregado en `enviarAlertaWhatsApp()`. Si se cambia el texto, actualizar también `test/pie-firma.js`.

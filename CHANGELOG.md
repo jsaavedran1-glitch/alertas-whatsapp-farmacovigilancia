@@ -2,6 +2,12 @@
 
 Todas las fechas en hora de Colombia (America/Bogota).
 
+## [1.3.0] - 2026-10-20
+
+### Agregado
+- Pie de firma en todos los mensajes de WhatsApp, en cursiva y debajo del cuerpo (mismo estilo que el bot de Alertas INVIMA): `_Bot diseñado por el QF Juan Pablo Saavedra · Servicio Farmacéutico HDV_`. Se agrega en `enviarAlertaWhatsApp()`, así que aplica a toda alerta que envíe el bot. El texto va con escapes `\u` para que las tildes no se corrompan al pegar en el editor de Apps Script. El correo electrónico no cambia.
+- `test/pie-firma.js`: prueba en seco que carga el `.gs` real con Green-API simulado y verifica que el mensaje termine con el pie. No envía nada.
+
 ## [Auditoría - sin cambios de código] - 2026-08-02
 
 Tras detectar y corregir en el Bot Tecnovigilancia un bug de espacios en blanco en los títulos del Google Form (que hacía que campo() no encontrara los valores y devolviera "—"), se auditó este bot para descartar el mismo problema.
